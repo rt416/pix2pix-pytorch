@@ -17,7 +17,7 @@ print(opt)
 
 netG = torch.load(opt.model)
 
-image_dir = "dataset/{}/test/photo/".format(opt.dataset)
+image_dir = "dataset/{}/test/a/".format(opt.dataset)
 image_filenames = [x for x in os.listdir(image_dir) if is_image_file(x)]
 
 for image_name in image_filenames:

@@ -2,7 +2,6 @@ from __future__ import print_function
 import argparse
 import os
 from math import log10
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -54,12 +53,12 @@ netG.apply(weights_init)
 netD = D(opt.input_nc, opt.output_nc, opt.ndf)
 netD.apply(weights_init)
 
-criterion = nn.BCELoss()
+criterion = nn.BCELoss()  # binary cross entropy loss
 criterion_l1 = nn.L1Loss()
 criterion_mse = nn.MSELoss()
 
-real_A = torch.FloatTensor(opt.batchSize, opt.input_nc, 256, 256)
-real_B = torch.FloatTensor(opt.batchSize, opt.output_nc, 256, 256)
+real_A = torch.FloatTensor(opt.batchSize, opt.input_nc, 256, 256)   # real input images
+real_B = torch.FloatTensor(opt.batchSize, opt.output_nc, 256, 256)  # real output images
 label = torch.FloatTensor(opt.batchSize)
 real_label = 1
 fake_label = 0
@@ -89,8 +88,8 @@ def train(epoch):
         ############################
         # (1) Update D network: maximize log(D(x,y)) + log(1 - D(x,G(x)))
         ###########################
-        for p in netD.parameters(): # reset requires_grad
-            p.requires_grad = True # they are set to False below in netG update
+        for p in netD.parameters():  # reset requires_grad
+            p.requires_grad = True  # they are set to False below in netG update
 
         # train with real
         netD.zero_grad()
@@ -106,7 +105,7 @@ def train(epoch):
 
         # train with fake
         fake_b = netG(real_A)
-        output = netD(torch.cat((real_A, fake_b.detach()), 1))
+        output = netD(torch.cat((real_A, fake_b.detach()), 1))  # (?): why need .detach?
         label.data.resize_(output.size()).fill_(fake_label)
         err_d_fake = criterion(output, label)
         err_d_fake.backward()
@@ -161,5 +160,6 @@ def checkpoint(epoch):
 for epoch in range(1, opt.nEpochs + 1):
     train(epoch)
     test()
-    if epoch % 50 == 0:
+    save_freq = 1  # 50
+    if epoch % save_freq == 0:
         checkpoint(epoch)
